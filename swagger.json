@@ -1,1 +1,1276 @@
-{"swagger":"2.0","info":{"description":"REST API for Payment Microservice of The International Bank of Azerbaijan","version":"1.0","title":"Payment Microservice REST API","contact":{"name":"IBA","url":"https://www.ibar.az","email":"cavid.nasirov.ibar.az"},"license":{"name":"Apache 2.0","url":"http://www.apache.org/licenses/LICENSE-2.0.html"}},"host":"ibam-backend-dev.apps.test.ocp.ibar.az","basePath":"/api/v3/payment-svc","tags":[{"name":"merchant-controller","description":"Merchant Controller"},{"name":"payment-controller","description":"Payment Controller"},{"name":"template-controller","description":"Template Controller"}],"paths":{"/":{"post":{"tags":["payment-controller"],"summary":"Do generic payments, Mobile, Internet and so on.","operationId":"paymentsUsingPOST","consumes":["application/json"],"produces":["*/*"],"parameters":[{"name":"deviceId","in":"header","description":"Kobil device id which is initiating payment","required":false,"type":"integer","format":"int32"},{"in":"body","name":"paymentDTO","description":"Details that are required to make successful payment.","required":false,"schema":{"$ref":"#/definitions/Payment"}}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"$ref":"#/definitions/Authorisation Data"}},"201":{"description":"Created"},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}},"/authorisations/{authorisationId}":{"put":{"tags":["payment-controller"],"summary":"Authorise payment operation","operationId":"authoriseUsingPUT","consumes":["application/json"],"produces":["*/*"],"parameters":[{"name":"authorisationId","in":"path","description":"Authorisation Id of previously submitted payment operation","required":true,"type":"string","format":"uuid"}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"$ref":"#/definitions/Payment Receipt"}},"201":{"description":"Created"},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}},"/categories":{"get":{"tags":["merchant-controller"],"summary":"Get list of categories","operationId":"getCategoriesUsingGET","produces":["*/*"],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"type":"array","items":{"$ref":"#/definitions/Category"}}},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}},"/categories/{id}/merchants":{"get":{"tags":["merchant-controller"],"summary":"Get merchants by categoryId ,categoryId can not be empty","operationId":"getMerchantsByCategoryIdUsingGET","produces":["*/*"],"parameters":[{"name":"id","in":"path","description":"id","required":true,"type":"integer","format":"int32"}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"type":"array","items":{"$ref":"#/definitions/Merchant"}}},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}},"/customer-info":{"post":{"tags":["payment-controller"],"summary":"Get customer info by billing params","operationId":"customerInfoUsingPOST","consumes":["application/json"],"produces":["*/*"],"parameters":[{"in":"body","name":"customerInfoDTO","description":"Billing parameter details that are required to retrieve customer information.","required":false,"schema":{"$ref":"#/definitions/Customer Info"}}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"$ref":"#/definitions/Customer Info Result"}},"201":{"description":"Created"},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}},"/templates":{"get":{"tags":["template-controller"],"summary":"Templates that owned by user","operationId":"getTemplatesUsingGET","produces":["*/*"],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"type":"array","items":{"$ref":"#/definitions/Template Result"}}},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false},"post":{"tags":["template-controller"],"summary":"Save new template","operationId":"saveTemplateUsingPOST","consumes":["application/json"],"produces":["*/*"],"parameters":[{"in":"body","name":"templateDTO","description":"Predefined details of the template that is requested to be created.","required":true,"schema":{"$ref":"#/definitions/Template"}}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"$ref":"#/definitions/Template"}},"201":{"description":"Created"},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false},"put":{"tags":["template-controller"],"summary":"Updates existing template","operationId":"updateTemplateUsingPUT","consumes":["application/json"],"produces":["*/*"],"parameters":[{"in":"body","name":"templateEditDTO","description":"Data, including updated parameters and template id, that is required to update template.","required":false,"schema":{"$ref":"#/definitions/Template Edit"}}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"$ref":"#/definitions/Template Edit Response"}},"201":{"description":"Created"},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}},"/templates/{template-id}":{"delete":{"tags":["template-controller"],"summary":"Delete template by id","operationId":"deleteTemplateUsingDELETE","produces":["*/*"],"parameters":[{"name":"template-id","in":"path","description":"Id of the template that is considered to be deleted.","required":false,"type":"string","x-example":"5ek7w9ct811079"}],"responses":{"200":{"description":"Requested operation was successfully completed.","schema":{"$ref":"#/definitions/Template Delete Response"}},"204":{"description":"No Content"},"401":{"description":"Unauthorized for requested operation."},"403":{"description":"Requested operation is not allowed."},"404":{"description":"Requested data was not found."}},"deprecated":false}}},"definitions":{"Amount":{"type":"object","properties":{"amount_type":{"type":"string","example":"DECIMAL","description":"Field considered to indicate the type of amount (integer, decimal ...)"},"max_amount":{"type":"number","example":100.0,"description":"Field considered to indicate the predefined maximum limit that can be paid."},"min_amount":{"type":"number","example":1.0,"description":"Field considered to indicate the predefined minimum limit that can be paid."}},"title":"Amount","description":"Object considered for predefined limits of amount."},"Authorisation Data":{"type":"object","properties":{"authorisation_id":{"type":"string","format":"uuid","example":"f75a1167-2bd8-403c-8324-ae7b01e9f458","description":"Field carries value of Authorisation Id"}},"title":"Authorisation Data","description":"Object considered for details of authorisation info for submitted payments"},"Billing Operation":{"type":"object","properties":{"code":{"type":"string","example":950013,"description":"Field considered for the code of the billing operation.","minLength":5,"maxLength":10},"debt":{"type":"number","example":-7.8,"description":"Field considered for the amount of debt that user owes."},"debt_id":{"type":"string","example":"Mw==_MDcwNDAxNDArNjIwMDIz_OTUwMTAz","description":"Field considered for id of the debt."},"fee":{"description":"Field considered for the fee that is determined for the billing operation.","$ref":"#/definitions/Fee"},"invoice_code":{"type":"string","example":4305800000080202003266940,"description":"Field considered for invoice code which is an id of billing operations for each user in database of Payment Aggregator."},"name":{"type":"string","example":"Elektrik enerjisinin istehlak haqqı","description":"Field considered for the name of the billing operation."},"partial_payment_allowed":{"type":"boolean","example":true,"description":"Field considered to indicate whether partial payment is allowed or not."},"pre_payment_allowed":{"type":"boolean","example":true,"description":"Field considered to indicate whether pre-payment is allowed or not."},"sumAmount":{"type":"number"},"sum_amount":{"type":"number","example":-8.25,"description":"Field considered for sum of debt which includes additions that generated due to late payments."}},"title":"Billing Operation","description":"Object considered for specifications of billing operation."},"Category":{"type":"object","properties":{"display_order":{"type":"integer","format":"int32","example":1,"description":"Field considered for the place of the category in category list."},"has_tint_color":{"type":"boolean","example":true,"description":"Field considered to indicate state of category for tint color"},"id":{"type":"integer","format":"int64","example":11,"description":"Field considered for the id of the category."},"logo_url":{"type":"string","example":"https://mbanking.ibar.az/static/new_ibam/categories/mobile.png","description":"Field considered for the url address that logo of the category is saved."},"name":{"type":"string","example":"Mobile","description":"Field considered for the name of the category."},"title":{"type":"string","example":"Mobile","description":"Field considered for the title of the category."}},"title":"Category","description":"Object considered for properties of category."},"Component":{"type":"object","properties":{"component_type":{"type":"string","example":"INPUT","description":"Field considered to indicate the type of the component.","enum":["INPUT","HIDDEN","SELECT"]},"condition":{"$ref":"#/definitions/Component Condition"},"display_order":{"type":"integer","format":"int32","example":1,"description":"Field considered for the place of the component while displaying."},"id":{"type":"integer","format":"int64","example":3,"description":"Field considered to indicate a component in a list of all available components."},"input_type":{"type":"string","example":"NUMBER","description":"Field considered for the type of input.","enum":["NONE","NUMBER","TEXT"]},"mask":{"type":"string","example":"### ## ##","description":"Field considered to indicate the format of the input while displaying."},"name":{"type":"string","example":"phone_number","description":"Field considered for representing title of the field with snake case."},"place_holder":{"type":"string","example":"Phone number","description":"Field considered for the describing input field itself."},"regex":{"type":"string","example":"^[0-9]{7}$","description":"Field considered for the regular expression that predetermined for the component."},"selected_value":{"type":"string","example":7370015,"description":"Field considered for the value selected for the component which is a part of the template."},"title":{"type":"string","example":"Phone number","description":"Field considered for the title of the component while displaying."},"values":{"type":"array","description":"Field considered for values of the component.","items":{"$ref":"#/definitions/Value"}}},"title":"Component","description":"Object considered for components of the parameters."},"Component Condition":{"type":"object","properties":{"paramName":{"type":"string","example":"identification_subtype","description":"Field considered for the name of the parameter."},"paramValue":{"type":"string","example":"ACC-ACC1","description":"Field considered for the value of the parameter."}},"title":"Component Condition","description":"Object considered for extra component details that is required by some Payment Aggregators."},"Customer Info":{"type":"object","properties":{"merchant_id":{"type":"integer","format":"int64","example":44,"description":"Field considered for the id of the merchant from whom customer information is requested."},"payment_params":{"type":"array","description":"Parameters that are required to retrieve customer information from merchant.","items":{"$ref":"#/definitions/Payment Param"}}},"title":"Customer Info","description":"Object considered for parameters that required for retrieving payment related details."},"Customer Info Result":{"type":"object","properties":{"billing_operations":{"type":"array","description":"Field considered for the billing operations that customer is able to do.","items":{"$ref":"#/definitions/Billing Operation"}},"customer":{"type":"string","example":"Natiq Cəfərli Niyazi","description":"Field considered for the name of the customer."},"merchant_id":{"type":"integer","format":"int64","example":44,"description":"Field considered for the id of the merchant that returned the customer information."},"transaction_id":{"type":"string","example":80525020200325010350345408199,"description":"Field considered for the transaction id generated for specific payment."}},"title":"Customer Info Result","description":"Object considered for payment details specific for customer."},"Fee":{"type":"object","properties":{"amount":{"type":"number","example":1.0,"description":"Field considered for the fee that is required for the transaction."},"calculation_method":{"type":"string","example":"SP_FIXED_FEE","description":"Field considered to indicate the method that is used for computing fee.","enum":["WITHOUT_FEE","GPP_FEE","SP_FIXED_FEE"]}},"title":"Fee","description":"Object considered for details related to the fee generated for the payment."},"Merchant":{"type":"object","properties":{"display_order":{"type":"integer","format":"int32","example":1,"description":"Field that indicates the place of the merchant in list of merchants which are grouped by category."},"has_tint_color":{"type":"boolean","example":true,"description":"Field considered to indicate state of category for tint color"},"id":{"type":"integer","format":"int64","example":1,"description":"Field considered for the id of merchant."},"logo_url":{"type":"string","example":"https://mbanking.ibar.az/static/new_ibam/logo/azercell.png","description":"Field considered for the url address where logo of the merchant is saved."},"must_be_checked":{"type":"boolean","example":true,"description":"Field considered for initial checking which varies based on a requirement of Payment Aggregator."},"name":{"type":"string","example":"Azercell","description":"Field considered for the name of the merchant."},"param":{"description":"Field considered for parameters that merchant has.","$ref":"#/definitions/Merchant Param"}},"title":"Merchant","description":"Object considered for properties and specifications of merchant."},"Merchant Param":{"type":"object","properties":{"amount_option":{"$ref":"#/definitions/Amount"},"components":{"type":"array","description":"Field considered for the list of components that are required to make payment to the specific merchant.","items":{"$ref":"#/definitions/Component"}},"type":{"type":"string","example":"Mobile","description":"Field considered for the category that merchant is included."}},"title":"Merchant Param","description":"Object considered for each parameter of the Merchant."},"Payment":{"type":"object","properties":{"amount":{"type":"number","example":7.8,"description":"Field considered for amount which will be transferred to merchant."},"billing_operation":{"description":"Field considered for billing operation for the specific payment.","$ref":"#/definitions/Billing Operation"},"card_number":{"type":"string","example":4127123486759642,"description":"Field considered for card number which will be used for payment.","minLength":14,"maxLength":19},"currency":{"type":"string","example":"AZN","description":"Field considered for currency of the payment.","enum":["AZN","USD","EUR","GBP"]},"full_amount":{"type":"number"},"merchant_id":{"type":"integer","format":"int64","example":1,"description":"Field considered for id of the merchant to whom payment will be made."},"payment_params":{"type":"array","description":"Field considered for the parameters of the payment.","items":{"$ref":"#/definitions/Payment Param"}},"template_id":{"type":"string","example":"5ek7w9ct811079","description":"Field considered for id of the template that can be used for validating template.","minLength":10,"maxLength":15},"transaction_id":{"type":"string","example":80525020200325010350345408199,"description":"Field considered for transaction id that is determined by Payment Aggregator for specific payment.","minLength":25,"maxLength":35}},"title":"Payment","description":"Object considered for details of the requested payment."},"Payment Param":{"type":"object","properties":{"component_id":{"type":"integer","format":"int64","example":"component_id","description":"Field considered for component id parameter."},"display_order":{"type":"integer","format":"int32","example":1,"description":"Field considered for the place of parameter while displaying."},"name":{"type":"string","example":"prefix","description":"Field considered for name of the parameter."},"value":{"description":"Field considered for the value of the parameter.","$ref":"#/definitions/Value"}},"title":"Payment Param","description":"Object considered for each parameter of the payment."},"Payment Receipt":{"type":"object","properties":{"amount":{"type":"number","example":18.3,"description":"Field considered for the amount of the payment."},"card_number":{"type":"string","example":4127123486759642,"description":"Field considered for the card number that was used for payment."},"currency":{"type":"string","example":"USD","description":"Field considered for currency of the payment.","enum":["AZN","USD","EUR","GBP"]},"description":{"type":"string","example":"50:5740408","description":"Field considered to describe payment based on parameters used."},"ref_number":{"type":"string","example":"IB0085325533","description":"Field considered for the reference number of the transaction made."},"status_code":{"type":"string","example":4,"description":"Field considered to indicate the status code of the payment made."},"status_text":{"type":"string","example":"card_to_ac_success","description":"Field considered to describe the status of the payment."},"success":{"type":"boolean","example":true,"description":"Field considered to indicate whether payment was successful or not."},"transaction_date":{"type":"string","format":"date-time","example":"2020-02-05 12:47:39","description":"Field considered for the date that payment was made."}},"title":"Payment Receipt","description":"Object considered for the receipt generated for the payment made."},"Response«Authorisation Data»":{"type":"object","properties":{"data":{"description":"Field considered to keep response returned by requested operation.","$ref":"#/definitions/Authorisation Data"},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«Authorisation Data»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«Customer Info Result»":{"type":"object","properties":{"data":{"description":"Field considered to keep response returned by requested operation.","$ref":"#/definitions/Customer Info Result"},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«Customer Info Result»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«List«Category»»":{"type":"object","properties":{"data":{"type":"array","description":"Field considered to keep response returned by requested operation.","items":{"$ref":"#/definitions/Category"}},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«List«Category»»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«List«Merchant»»":{"type":"object","properties":{"data":{"type":"array","description":"Field considered to keep response returned by requested operation.","items":{"$ref":"#/definitions/Merchant"}},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«List«Merchant»»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«List«Template Result»»":{"type":"object","properties":{"data":{"type":"array","description":"Field considered to keep response returned by requested operation.","items":{"$ref":"#/definitions/Template Result"}},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«List«Template Result»»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«Payment Receipt»":{"type":"object","properties":{"data":{"description":"Field considered to keep response returned by requested operation.","$ref":"#/definitions/Payment Receipt"},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«Payment Receipt»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«Template Delete Response»":{"type":"object","properties":{"data":{"description":"Field considered to keep response returned by requested operation.","$ref":"#/definitions/Template Delete Response"},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«Template Delete Response»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«Template Edit Response»":{"type":"object","properties":{"data":{"description":"Field considered to keep response returned by requested operation.","$ref":"#/definitions/Template Edit Response"},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«Template Edit Response»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Response«Template»":{"type":"object","properties":{"data":{"description":"Field considered to keep response returned by requested operation.","$ref":"#/definitions/Template"},"message":{"type":"string","example":"Success","description":"Field considered to describe message of the response returned."}},"title":"Response«Template»","description":"Object considered to be a wrapper for any response that is required to be returned."},"Template":{"type":"object","properties":{"abonent_code":{"type":"string","example":"070400400620023","description":"Field considered for the id of the customer at merchant's list."},"amount":{"type":"number","example":18.0,"description":"Field considered for the amount of the transfer."},"card_number":{"type":"string","example":412730141869885,"description":"Field considered for the card number that will be used for payment.","minLength":14,"maxLength":19},"currency":{"type":"string","example":"AZN","description":"Field considered for specified currency of the template.","enum":["AZN","USD","EUR","GBP"]},"merchant_id":{"type":"integer","format":"int64","example":1,"description":"Field considered for the id of the merchant to whom payment is made."},"params":{"type":"array","description":"Field considered for the parameters of the template.","items":{"$ref":"#/definitions/Template Param"}},"template_id":{"type":"string","example":"5ek7w9ct81108p","description":"Field considered for the id of the template."},"template_name":{"type":"string","example":"Ev internet","description":"Field considered for the name of the template.","minLength":3,"maxLength":20}},"title":"Template","description":"Object considered to handle details of the template."},"Template Delete Response":{"type":"object","properties":{"deleted_template_id":{"type":"string","example":"5ek7w9ct8110iz","description":"Field considered for template id that was deleted."}},"title":"Template Delete Response","description":"Object considered for response returned after deleting template."},"Template Edit":{"type":"object","properties":{"amount":{"type":"number","example":15.2,"description":"Field considered for the updated (optional) amount."},"card_number":{"type":"string","example":4127234898320871,"description":"Field considered for the updated (optional) card number.","minLength":14,"maxLength":19},"template_id":{"type":"string","example":"2sk85lf7e81003","description":"Field considered for the id of the template that is requested to be updated.","minLength":10,"maxLength":15},"template_name":{"type":"string","example":"Ev internet","description":"Field considered for the updated (optional) name.","minLength":3,"maxLength":20}},"title":"Template Edit","description":"Object considered for details that are required to be updated."},"Template Edit Response":{"type":"object","properties":{"updated_template_id":{"type":"string","example":"2sk85lf7e81003","description":"Field considered for template id that was updated."}},"title":"Template Edit Response","description":"Object considered for response returned after updating template."},"Template Param":{"type":"object","properties":{"component_id":{"type":"integer","format":"int64","example":3,"description":"Field considered to indicate a component in a list of all available components."},"name":{"type":"string","example":"prefix","description":"Field considered for the name of the parameter."},"value":{"description":"Field considered for the value of the parameter.","$ref":"#/definitions/Value"}},"title":"Template Param","description":"Object considered for each parameter of the template."},"Template Result":{"type":"object","properties":{"merchant":{"description":"Field considered for merchant to whom payment is made via template.","$ref":"#/definitions/Merchant"},"template":{"description":"Field considered for Template that is used for payment.","$ref":"#/definitions/Template"}},"title":"Template Result","description":"Object considered for managing each template and its appropriate merchant."},"Value":{"type":"object","properties":{"display_order":{"type":"integer","format":"int32","example":1,"description":"Field considered for the place of the value in list of multiple values."},"label":{"type":"string","example":"Bakı (12)","description":"Field considered for the label of the value."},"name":{"type":"string","example":"city_Bakı","description":"Field considered for the name of the value."},"value":{"type":"string","example":12,"description":"Field considered for the value itself."}},"title":"Value","description":"Object considered for each value and its properties."}}}
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Payment Microservice REST API",
+        "version": "1.0",
+        "description": "REST API for Payment Microservice of The International Bank of Azerbaijan",
+        "contact": {
+            "name": "IBA",
+            "url": "https://www.ibar.az",
+            "email": "cavid.nasirov.ibar.az"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
+    },
+    "host": "ibam-backend-dev.apps.test.ocp.ibar.az",
+    "basePath": "/api/v3/payment-svc",
+    "paths": {
+        "/": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "payment-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "deviceId",
+                        "description": "Kobil device id which is initiating payment",
+                        "in": "header",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    {
+                        "name": "paymentDTO",
+                        "description": "Details that are required to make successful payment.",
+                        "schema": {
+                            "$ref": "#/definitions/Payment"
+                        },
+                        "in": "body",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "$ref": "#/definitions/Authorisation Data"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "paymentsUsingPOST",
+                "summary": "Do generic payments, Mobile, Internet and so on."
+            }
+        },
+        "/authorisations/{authorisationId}": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "payment-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "authorisationId",
+                        "description": "Authorisation Id of previously submitted payment operation",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "$ref": "#/definitions/Payment Receipt"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "authoriseUsingPUT",
+                "summary": "Authorise payment operation"
+            }
+        },
+        "/categories": {
+            "get": {
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "merchant-controller"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Category"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "getCategoriesUsingGET",
+                "summary": "Get list of categories"
+            }
+        },
+        "/categories/{id}/merchants": {
+            "get": {
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "merchant-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "description": "id",
+                        "in": "path",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int32"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Merchant"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "getMerchantsByCategoryIdUsingGET",
+                "summary": "Get merchants by categoryId ,categoryId can not be empty"
+            }
+        },
+        "/customer-info": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "payment-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "customerInfoDTO",
+                        "description": "Billing parameter details that are required to retrieve customer information.",
+                        "schema": {
+                            "$ref": "#/definitions/Customer Info"
+                        },
+                        "in": "body",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "$ref": "#/definitions/Customer Info Result"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "customerInfoUsingPOST",
+                "summary": "Get customer info by billing params"
+            }
+        },
+        "/templates": {
+            "get": {
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "template-controller"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Template Result"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "getTemplatesUsingGET",
+                "summary": "Templates that owned by user"
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "template-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "templateEditDTO",
+                        "description": "Data, including updated parameters and template id, that is required to update template.",
+                        "schema": {
+                            "$ref": "#/definitions/Template Edit"
+                        },
+                        "in": "body",
+                        "required": false
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "$ref": "#/definitions/Template Edit Response"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "updateTemplateUsingPUT",
+                "summary": "Updates existing template"
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "template-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "templateDTO",
+                        "description": "Predefined details of the template that is requested to be created.",
+                        "schema": {
+                            "$ref": "#/definitions/Template"
+                        },
+                        "in": "body",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "$ref": "#/definitions/Template"
+                        }
+                    },
+                    "201": {
+                        "description": "Created"
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "saveTemplateUsingPOST",
+                "summary": "Save new template"
+            }
+        },
+        "/templates/{template-id}": {
+            "delete": {
+                "produces": [
+                    "*/*"
+                ],
+                "tags": [
+                    "template-controller"
+                ],
+                "parameters": [
+                    {
+                        "name": "template-id",
+                        "description": "Id of the template that is considered to be deleted.",
+                        "in": "path",
+                        "required": false,
+                        "type": "string",
+                        "x-example": "5ek7w9ct811079"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Requested operation was successfully completed.",
+                        "schema": {
+                            "$ref": "#/definitions/Template Delete Response"
+                        }
+                    },
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "401": {
+                        "description": "Unauthorized for requested operation."
+                    },
+                    "403": {
+                        "description": "Requested operation is not allowed."
+                    },
+                    "404": {
+                        "description": "Requested data was not found."
+                    }
+                },
+                "deprecated": false,
+                "operationId": "deleteTemplateUsingDELETE",
+                "summary": "Delete template by id"
+            }
+        }
+    },
+    "definitions": {
+        "Amount": {
+            "title": "Amount",
+            "description": "Object considered for predefined limits of amount.",
+            "type": "object",
+            "properties": {
+                "amount_type": {
+                    "description": "Field considered to indicate the type of amount (integer, decimal ...)",
+                    "type": "string",
+                    "example": "DECIMAL"
+                },
+                "max_amount": {
+                    "description": "Field considered to indicate the predefined maximum limit that can be paid.",
+                    "type": "number",
+                    "example": 100
+                },
+                "min_amount": {
+                    "description": "Field considered to indicate the predefined minimum limit that can be paid.",
+                    "type": "number",
+                    "example": 1
+                }
+            }
+        },
+        "Authorisation Data": {
+            "title": "Authorisation Data",
+            "description": "Object considered for details of authorisation info for submitted payments",
+            "type": "object",
+            "properties": {
+                "authorisation_id": {
+                    "format": "uuid",
+                    "description": "Field carries value of Authorisation Id",
+                    "type": "string",
+                    "example": "f75a1167-2bd8-403c-8324-ae7b01e9f458"
+                }
+            }
+        },
+        "Billing Operation": {
+            "title": "Billing Operation",
+            "description": "Object considered for specifications of billing operation.",
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "Field considered for the code of the billing operation.",
+                    "maxLength": 10,
+                    "minLength": 5,
+                    "type": "string",
+                    "example": 950013
+                },
+                "debt": {
+                    "description": "Field considered for the amount of debt that user owes.",
+                    "type": "number",
+                    "example": -7.8
+                },
+                "debt_id": {
+                    "description": "Field considered for id of the debt.",
+                    "type": "string",
+                    "example": "Mw==_MDcwNDAxNDArNjIwMDIz_OTUwMTAz"
+                },
+                "fee": {
+                    "$ref": "#/definitions/Fee",
+                    "description": "Field considered for the fee that is determined for the billing operation."
+                },
+                "invoice_code": {
+                    "description": "Field considered for invoice code which is an id of billing operations for each user in database of Payment Aggregator.",
+                    "type": "string",
+                    "example": 4.305800000080202E24
+                },
+                "name": {
+                    "description": "Field considered for the name of the billing operation.",
+                    "type": "string",
+                    "example": "Elektrik enerjisinin istehlak haqqı"
+                },
+                "partial_payment_allowed": {
+                    "description": "Field considered to indicate whether partial payment is allowed or not.",
+                    "type": "boolean",
+                    "example": true
+                },
+                "pre_payment_allowed": {
+                    "description": "Field considered to indicate whether pre-payment is allowed or not.",
+                    "type": "boolean",
+                    "example": true
+                },
+                "sumAmount": {
+                    "type": "number"
+                },
+                "sum_amount": {
+                    "description": "Field considered for sum of debt which includes additions that generated due to late payments.",
+                    "type": "number",
+                    "example": -8.25
+                }
+            }
+        },
+        "Category": {
+            "title": "Category",
+            "description": "Object considered for properties of category.",
+            "type": "object",
+            "properties": {
+                "display_order": {
+                    "format": "int32",
+                    "description": "Field considered for the place of the category in category list.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "has_tint_color": {
+                    "description": "Field considered to indicate state of category for tint color",
+                    "type": "boolean",
+                    "example": true
+                },
+                "id": {
+                    "format": "int64",
+                    "description": "Field considered for the id of the category.",
+                    "type": "integer",
+                    "example": 11
+                },
+                "logo_url": {
+                    "description": "Field considered for the url address that logo of the category is saved.",
+                    "type": "string",
+                    "example": "https://mbanking.ibar.az/static/new_ibam/categories/mobile.png"
+                },
+                "name": {
+                    "description": "Field considered for the name of the category.",
+                    "type": "string",
+                    "example": "Mobile"
+                },
+                "title": {
+                    "description": "Field considered for the title of the category.",
+                    "type": "string",
+                    "example": "Mobile"
+                }
+            }
+        },
+        "Component": {
+            "title": "Component",
+            "description": "Object considered for components of the parameters.",
+            "type": "object",
+            "properties": {
+                "component_type": {
+                    "description": "Field considered to indicate the type of the component.",
+                    "enum": [
+                        "INPUT",
+                        "HIDDEN",
+                        "SELECT"
+                    ],
+                    "type": "string",
+                    "example": "INPUT"
+                },
+                "condition": {
+                    "$ref": "#/definitions/Component Condition"
+                },
+                "display_order": {
+                    "format": "int32",
+                    "description": "Field considered for the place of the component while displaying.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "id": {
+                    "format": "int64",
+                    "description": "Field considered to indicate a component in a list of all available components.",
+                    "type": "integer",
+                    "example": 3
+                },
+                "input_type": {
+                    "description": "Field considered for the type of input.",
+                    "enum": [
+                        "NONE",
+                        "NUMBER",
+                        "TEXT"
+                    ],
+                    "type": "string",
+                    "example": "NUMBER"
+                },
+                "mask": {
+                    "description": "Field considered to indicate the format of the input while displaying.",
+                    "type": "string",
+                    "example": "### ## ##"
+                },
+                "name": {
+                    "description": "Field considered for representing title of the field with snake case.",
+                    "type": "string",
+                    "example": "phone_number"
+                },
+                "place_holder": {
+                    "description": "Field considered for the describing input field itself.",
+                    "type": "string",
+                    "example": "Phone number"
+                },
+                "regex": {
+                    "description": "Field considered for the regular expression that predetermined for the component.",
+                    "type": "string",
+                    "example": "^[0-9]{7}$"
+                },
+                "selected_value": {
+                    "description": "Field considered for the value selected for the component which is a part of the template.",
+                    "type": "string",
+                    "example": 7370015
+                },
+                "title": {
+                    "description": "Field considered for the title of the component while displaying.",
+                    "type": "string",
+                    "example": "Phone number"
+                },
+                "values": {
+                    "description": "Field considered for values of the component.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Value"
+                    }
+                }
+            }
+        },
+        "Component Condition": {
+            "title": "Component Condition",
+            "description": "Object considered for extra component details that is required by some Payment Aggregators.",
+            "type": "object",
+            "properties": {
+                "paramName": {
+                    "description": "Field considered for the name of the parameter.",
+                    "type": "string",
+                    "example": "identification_subtype"
+                },
+                "paramValue": {
+                    "description": "Field considered for the value of the parameter.",
+                    "type": "string",
+                    "example": "ACC-ACC1"
+                }
+            }
+        },
+        "Customer Info": {
+            "title": "Customer Info",
+            "description": "Object considered for parameters that required for retrieving payment related details.",
+            "type": "object",
+            "properties": {
+                "merchant_id": {
+                    "format": "int64",
+                    "description": "Field considered for the id of the merchant from whom customer information is requested.",
+                    "type": "integer",
+                    "example": 44
+                },
+                "payment_params": {
+                    "description": "Parameters that are required to retrieve customer information from merchant.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Payment Param"
+                    }
+                }
+            }
+        },
+        "Customer Info Result": {
+            "title": "Customer Info Result",
+            "description": "Object considered for payment details specific for customer.",
+            "type": "object",
+            "properties": {
+                "billing_operations": {
+                    "description": "Field considered for the billing operations that customer is able to do.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Billing Operation"
+                    }
+                },
+                "customer": {
+                    "description": "Field considered for the name of the customer.",
+                    "type": "string",
+                    "example": "Natiq Cəfərli Niyazi"
+                },
+                "merchant_id": {
+                    "format": "int64",
+                    "description": "Field considered for the id of the merchant that returned the customer information.",
+                    "type": "integer",
+                    "example": 44
+                },
+                "transaction_id": {
+                    "description": "Field considered for the transaction id generated for specific payment.",
+                    "type": "string",
+                    "example": 8.052502020032501E28
+                }
+            }
+        },
+        "Fee": {
+            "title": "Fee",
+            "description": "Object considered for details related to the fee generated for the payment.",
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Field considered for the fee that is required for the transaction.",
+                    "type": "number",
+                    "example": 1
+                },
+                "calculation_method": {
+                    "description": "Field considered to indicate the method that is used for computing fee.",
+                    "enum": [
+                        "WITHOUT_FEE",
+                        "GPP_FEE",
+                        "SP_FIXED_FEE"
+                    ],
+                    "type": "string",
+                    "example": "SP_FIXED_FEE"
+                }
+            }
+        },
+        "Merchant": {
+            "title": "Merchant",
+            "description": "Object considered for properties and specifications of merchant.",
+            "type": "object",
+            "properties": {
+                "display_order": {
+                    "format": "int32",
+                    "description": "Field that indicates the place of the merchant in list of merchants which are grouped by category.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "has_tint_color": {
+                    "description": "Field considered to indicate state of category for tint color",
+                    "type": "boolean",
+                    "example": true
+                },
+                "id": {
+                    "format": "int64",
+                    "description": "Field considered for the id of merchant.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "logo_url": {
+                    "description": "Field considered for the url address where logo of the merchant is saved.",
+                    "type": "string",
+                    "example": "https://mbanking.ibar.az/static/new_ibam/logo/azercell.png"
+                },
+                "must_be_checked": {
+                    "description": "Field considered for initial checking which varies based on a requirement of Payment Aggregator.",
+                    "type": "boolean",
+                    "example": true
+                },
+                "name": {
+                    "description": "Field considered for the name of the merchant.",
+                    "type": "string",
+                    "example": "Azercell"
+                },
+                "param": {
+                    "$ref": "#/definitions/Merchant Param",
+                    "description": "Field considered for parameters that merchant has."
+                }
+            }
+        },
+        "Merchant Param": {
+            "title": "Merchant Param",
+            "description": "Object considered for each parameter of the Merchant.",
+            "type": "object",
+            "properties": {
+                "amount_option": {
+                    "$ref": "#/definitions/Amount"
+                },
+                "components": {
+                    "description": "Field considered for the list of components that are required to make payment to the specific merchant.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Component"
+                    }
+                },
+                "type": {
+                    "description": "Field considered for the category that merchant is included.",
+                    "type": "string",
+                    "example": "Mobile"
+                }
+            }
+        },
+        "Payment": {
+            "title": "Payment",
+            "description": "Object considered for details of the requested payment.",
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Field considered for amount which will be transferred to merchant.",
+                    "type": "number",
+                    "example": 7.8
+                },
+                "billing_operation": {
+                    "$ref": "#/definitions/Billing Operation",
+                    "description": "Field considered for billing operation for the specific payment."
+                },
+                "card_number": {
+                    "description": "Field considered for card number which will be used for payment.",
+                    "maxLength": 19,
+                    "minLength": 14,
+                    "type": "string",
+                    "example": 4127123486759642
+                },
+                "currency": {
+                    "description": "Field considered for currency of the payment.",
+                    "enum": [
+                        "AZN",
+                        "USD",
+                        "EUR",
+                        "GBP"
+                    ],
+                    "type": "string",
+                    "example": "AZN"
+                },
+                "full_amount": {
+                    "type": "number"
+                },
+                "merchant_id": {
+                    "format": "int64",
+                    "description": "Field considered for id of the merchant to whom payment will be made.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "payment_params": {
+                    "description": "Field considered for the parameters of the payment.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Payment Param"
+                    }
+                },
+                "template_id": {
+                    "description": "Field considered for id of the template that can be used for validating template.",
+                    "maxLength": 15,
+                    "minLength": 10,
+                    "type": "string",
+                    "example": "5ek7w9ct811079"
+                },
+                "transaction_id": {
+                    "description": "Field considered for transaction id that is determined by Payment Aggregator for specific payment.",
+                    "maxLength": 35,
+                    "minLength": 25,
+                    "type": "string",
+                    "example": 8.052502020032501E28
+                }
+            }
+        },
+        "Payment Param": {
+            "title": "Payment Param",
+            "description": "Object considered for each parameter of the payment.",
+            "type": "object",
+            "properties": {
+                "component_id": {
+                    "format": "int64",
+                    "description": "Field considered for component id parameter.",
+                    "type": "integer",
+                    "example": "component_id"
+                },
+                "display_order": {
+                    "format": "int32",
+                    "description": "Field considered for the place of parameter while displaying.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "description": "Field considered for name of the parameter.",
+                    "type": "string",
+                    "example": "prefix"
+                },
+                "value": {
+                    "$ref": "#/definitions/Value",
+                    "description": "Field considered for the value of the parameter."
+                }
+            }
+        },
+        "Payment Receipt": {
+            "title": "Payment Receipt",
+            "description": "Object considered for the receipt generated for the payment made.",
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Field considered for the amount of the payment.",
+                    "type": "number",
+                    "example": 18.3
+                },
+                "card_number": {
+                    "description": "Field considered for the card number that was used for payment.",
+                    "type": "string",
+                    "example": 4127123486759642
+                },
+                "currency": {
+                    "description": "Field considered for currency of the payment.",
+                    "enum": [
+                        "AZN",
+                        "USD",
+                        "EUR",
+                        "GBP"
+                    ],
+                    "type": "string",
+                    "example": "USD"
+                },
+                "description": {
+                    "description": "Field considered to describe payment based on parameters used.",
+                    "type": "string",
+                    "example": "50:5740408"
+                },
+                "ref_number": {
+                    "description": "Field considered for the reference number of the transaction made.",
+                    "type": "string",
+                    "example": "IB0085325533"
+                },
+                "status_code": {
+                    "description": "Field considered to indicate the status code of the payment made.",
+                    "type": "string",
+                    "example": 4
+                },
+                "status_text": {
+                    "description": "Field considered to describe the status of the payment.",
+                    "type": "string",
+                    "example": "card_to_ac_success"
+                },
+                "success": {
+                    "description": "Field considered to indicate whether payment was successful or not.",
+                    "type": "boolean",
+                    "example": true
+                },
+                "transaction_date": {
+                    "format": "date-time",
+                    "description": "Field considered for the date that payment was made.",
+                    "type": "string",
+                    "example": "2020-02-05 12:47:39"
+                }
+            }
+        },
+        "Response«Authorisation Data»": {
+            "title": "Response«Authorisation Data»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/Authorisation Data",
+                    "description": "Field considered to keep response returned by requested operation."
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«Customer Info Result»": {
+            "title": "Response«Customer Info Result»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/Customer Info Result",
+                    "description": "Field considered to keep response returned by requested operation."
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«List«Category»»": {
+            "title": "Response«List«Category»»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Field considered to keep response returned by requested operation.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Category"
+                    }
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«List«Merchant»»": {
+            "title": "Response«List«Merchant»»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Field considered to keep response returned by requested operation.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Merchant"
+                    }
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«List«Template Result»»": {
+            "title": "Response«List«Template Result»»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "description": "Field considered to keep response returned by requested operation.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Template Result"
+                    }
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«Payment Receipt»": {
+            "title": "Response«Payment Receipt»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/Payment Receipt",
+                    "description": "Field considered to keep response returned by requested operation."
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«Template Delete Response»": {
+            "title": "Response«Template Delete Response»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/Template Delete Response",
+                    "description": "Field considered to keep response returned by requested operation."
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«Template Edit Response»": {
+            "title": "Response«Template Edit Response»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/Template Edit Response",
+                    "description": "Field considered to keep response returned by requested operation."
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Response«Template»": {
+            "title": "Response«Template»",
+            "description": "Object considered to be a wrapper for any response that is required to be returned.",
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/Template",
+                    "description": "Field considered to keep response returned by requested operation."
+                },
+                "message": {
+                    "description": "Field considered to describe message of the response returned.",
+                    "type": "string",
+                    "example": "Success"
+                }
+            }
+        },
+        "Template": {
+            "title": "Template",
+            "description": "Object considered to handle details of the template.",
+            "type": "object",
+            "properties": {
+                "abonent_code": {
+                    "description": "Field considered for the id of the customer at merchant's list.",
+                    "type": "string",
+                    "example": "070400400620023"
+                },
+                "amount": {
+                    "description": "Field considered for the amount of the transfer.",
+                    "type": "number",
+                    "example": 18
+                },
+                "card_number": {
+                    "description": "Field considered for the card number that will be used for payment.",
+                    "maxLength": 19,
+                    "minLength": 14,
+                    "type": "string",
+                    "example": 412730141869885
+                },
+                "currency": {
+                    "description": "Field considered for specified currency of the template.",
+                    "enum": [
+                        "AZN",
+                        "USD",
+                        "EUR",
+                        "GBP"
+                    ],
+                    "type": "string",
+                    "example": "AZN"
+                },
+                "merchant_id": {
+                    "format": "int64",
+                    "description": "Field considered for the id of the merchant to whom payment is made.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "params": {
+                    "description": "Field considered for the parameters of the template.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Template Param"
+                    }
+                },
+                "template_id": {
+                    "description": "Field considered for the id of the template.",
+                    "type": "string",
+                    "example": "5ek7w9ct81108p"
+                },
+                "template_name": {
+                    "description": "Field considered for the name of the template.",
+                    "maxLength": 20,
+                    "minLength": 3,
+                    "type": "string",
+                    "example": "Ev internet"
+                }
+            }
+        },
+        "Template Delete Response": {
+            "title": "Template Delete Response",
+            "description": "Object considered for response returned after deleting template.",
+            "type": "object",
+            "properties": {
+                "deleted_template_id": {
+                    "description": "Field considered for template id that was deleted.",
+                    "type": "string",
+                    "example": "5ek7w9ct8110iz"
+                }
+            }
+        },
+        "Template Edit": {
+            "title": "Template Edit",
+            "description": "Object considered for details that are required to be updated.",
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "description": "Field considered for the updated (optional) amount.",
+                    "type": "number",
+                    "example": 15.2
+                },
+                "card_number": {
+                    "description": "Field considered for the updated (optional) card number.",
+                    "maxLength": 19,
+                    "minLength": 14,
+                    "type": "string",
+                    "example": 4127234898320871
+                },
+                "template_id": {
+                    "description": "Field considered for the id of the template that is requested to be updated.",
+                    "maxLength": 15,
+                    "minLength": 10,
+                    "type": "string",
+                    "example": "2sk85lf7e81003"
+                },
+                "template_name": {
+                    "description": "Field considered for the updated (optional) name.",
+                    "maxLength": 20,
+                    "minLength": 3,
+                    "type": "string",
+                    "example": "Ev internet"
+                }
+            }
+        },
+        "Template Edit Response": {
+            "title": "Template Edit Response",
+            "description": "Object considered for response returned after updating template.",
+            "type": "object",
+            "properties": {
+                "updated_template_id": {
+                    "description": "Field considered for template id that was updated.",
+                    "type": "string",
+                    "example": "2sk85lf7e81003"
+                }
+            }
+        },
+        "Template Param": {
+            "title": "Template Param",
+            "description": "Object considered for each parameter of the template.",
+            "type": "object",
+            "properties": {
+                "component_id": {
+                    "format": "int64",
+                    "description": "Field considered to indicate a component in a list of all available components.",
+                    "type": "integer",
+                    "example": 3
+                },
+                "name": {
+                    "description": "Field considered for the name of the parameter.",
+                    "type": "string",
+                    "example": "prefix"
+                },
+                "value": {
+                    "$ref": "#/definitions/Value",
+                    "description": "Field considered for the value of the parameter."
+                }
+            }
+        },
+        "Template Result": {
+            "title": "Template Result",
+            "description": "Object considered for managing each template and its appropriate merchant.",
+            "type": "object",
+            "properties": {
+                "merchant": {
+                    "$ref": "#/definitions/Merchant",
+                    "description": "Field considered for merchant to whom payment is made via template."
+                },
+                "template": {
+                    "$ref": "#/definitions/Template",
+                    "description": "Field considered for Template that is used for payment."
+                }
+            }
+        },
+        "Value": {
+            "title": "Value",
+            "description": "Object considered for each value and its properties.",
+            "type": "object",
+            "properties": {
+                "display_order": {
+                    "format": "int32",
+                    "description": "Field considered for the place of the value in list of multiple values.",
+                    "type": "integer",
+                    "example": 1
+                },
+                "label": {
+                    "description": "Field considered for the label of the value.",
+                    "type": "string",
+                    "example": "Bakı (12)"
+                },
+                "name": {
+                    "description": "Field considered for the name of the value.",
+                    "type": "string",
+                    "example": "city_Bakı"
+                },
+                "value": {
+                    "description": "Field considered for the value itself.",
+                    "type": "string",
+                    "example": 12
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "merchant-controller",
+            "description": "Merchant Controller"
+        },
+        {
+            "name": "payment-controller",
+            "description": "Payment Controller"
+        },
+        {
+            "name": "template-controller",
+            "description": "Template Controller"
+        }
+    ]
+}
