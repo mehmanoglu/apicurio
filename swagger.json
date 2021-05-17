@@ -1,13 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Payment Microservice REST API Edited on Github",
+        "title": "Payment Microservice REST API",
         "version": "1.0",
-        "description": "REST API for Payment Microservice of The International Bank of Azerbaijan",
+        "description": "REST API for Payment Microservice of The International Bank of Azerbaijan TEST",
         "contact": {
             "name": "IBA",
             "url": "https://www.ibar.az",
-            "email": "cavid.nasirov.ibar.az"
+            "email": "javid@ibar.az"
         },
         "license": {
             "name": "Apache 2.0",
